@@ -101,7 +101,7 @@ class LuHamilton(object):
 
 if __name__ == '__main__':
     sun = LuHamilton((48, 48))
-    iterations = 200000
+    iterations = 300000
     import time
     t = time.time()
     for i in range(iterations):
