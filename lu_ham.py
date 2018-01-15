@@ -44,8 +44,8 @@ class LuHamilton(object):
     def find_peaks(self, cells):
         # returns cells indices with dA > Zc
         # self.calculate_dA(cells)
-        # self.calculate_dA_conv(cells)
-        self.calculate_dA_conv2(cells)
+        self.calculate_dA_conv(cells)
+        # self.calculate_dA_conv2(cells)
         return np.abs(self.dA) > self.Zc
 
     def redistribute(self, cell_xy, peak_sign):
@@ -85,25 +85,31 @@ class LuHamilton(object):
 
 if __name__ == '__main__':
     sun = LuHamilton((48, 48))
+    iterations = 30000
     import time
     t = time.time()
     for i in range(iterations):
         sun.evolve()
 
-    print "Simulation time: " + str(time.time() - t)
+    print("Simulation time: " + str(time.time() - t))
 
     time_duration_distr = np.bincount(sun.flare_durations)[1:]
-    print time_duration_distr
-    print np.bincount((np.array(sun.flare_peak_en)*10).astype(int))
-    print np.bincount((np.array(sun.flare_average_en)*10).astype(int))
+    flare_peak_en_disrt = np.bincount((np.array(sun.flare_peak_en)*10).astype(int))
+    flare_total_en_disrt = np.bincount((np.array(sun.flare_peak_en)*10).astype(int))
+
+    print(time_duration_distr)
+    print(flare_peak_en_disrt)
+    print(flare_total_en_disrt)
+
+
 
     fig = plt.figure()
     plt.subplot(311)
-    plt.plot(np.bincount(sun.flare_durations)[1:])
+    plt.plot(time_duration_distr)
     plt.subplot(312)
-    plt.plot(np.bincount((np.array(sun.flare_peak_en)*10).astype(int))[1:])
+    plt.plot(flare_peak_en_disrt)
     plt.subplot(313)
-    plt.plot(np.bincount((np.array(sun.flare_average_en)*10).astype(int))[1:])
+    plt.plot(flare_total_en_disrt)
     plt.show()
 
 
