@@ -1,10 +1,12 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from lu_ham import LuHamilton
+from strugarek import Strugarek
 from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 
-automate = LuHamilton((20, 20))
+# automate = LuHamilton((20, 20))
+automate = Strugarek((48, 48))
 
 class MyView(pg.GraphicsWindow):
     def __init__(self):
@@ -33,10 +35,11 @@ class MyView(pg.GraphicsWindow):
     def update(self):
         self.counter += 1
         automate.evolve()
-        self.img.setImage(automate.cells/np.max(automate.cells) * 255)
+        if not self.counter % 1000:  # update every 100 iterations. Should work faster
+            self.img.setImage(automate.cells/np.max(automate.cells) * 255)
 
-        output_text = 'Iteration: ' + str(self.counter)
-        self.label.setText(output_text)
+            output_text = 'Iteration: ' + str(self.counter)
+            self.label.setText(output_text)
 
 
 

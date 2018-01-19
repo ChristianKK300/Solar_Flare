@@ -15,8 +15,8 @@ class Strugarek(object):
         self.drive = 1  # additive value to random location
         self.epsilon = 0.00001  # for global driving
         self.iteration_change_drive = 1000     # threshold when to start global driving
-        self.sigmaZc = 0.01 # deviation of Zc for stochastic threshold On
-        self.Dnc = 0.1      # value for non conservative models
+        self.sigmaZc = 0.01     # deviation of Zc for stochastic threshold On
+        self.Dnc = 0.1          # value for non conservative models
 
         self.random_redistribution = False
         self.extraction = False
@@ -88,6 +88,17 @@ class Strugarek(object):
                 self.cells[x - 1, y] += Z * c
                 self.cells[x, y + 1] += Z * c
                 self.cells[x, y - 1] += Z * c
+
+    def redistribute_nonlocal(self, cell_xy, peak_sign):
+            x, y = cell_xy
+            Z = peak_sign * self.Zc
+            c = 0.2
+
+            self.cells[x, y] -= Z * (1 - c)
+            self.cells[x + 1, y] += Z * c
+            self.cells[x - 1, y] += Z * c
+            self.cells[x, y + 1] += Z * c
+            self.cells[x, y - 1] += Z * c
 
 
 
@@ -166,14 +177,14 @@ if __name__ == '__main__':
               ]
 
     sun = Strugarek((48, 48))
-    for p in params:
+    for p in [params[2]]:
         print p
         sun.random_threshold = p[0]
         sun.random_redistribution = p[2]
         sun.extraction = p[1]
         sun.conservative = True
 
-        iterations = 3000000
+        iterations = 500000
 
         t = time.time()
         for i in tqdm(range(iterations)):
