@@ -69,7 +69,7 @@ class Strugarek(object):
                 r0 = np.random.uniform(self.Dnc, 1)
             # print np.abs(self.dA[x, y]) - self.Zc
             if extraction:
-                print np.abs(self.dA[x, y])
+                print(np.abs(self.dA[x, y]))
                 Z = peak_sign * np.random.uniform(np.abs(self.dA[x, y]) - self.Zc, self.Zc)
 
             c = r0 * 0.2
@@ -199,13 +199,13 @@ if __name__ == '__main__':
 
     sun = Strugarek((48, 48))
     for p in [params[-1]]:
-        print p
+        print(p)
         sun.random_threshold = p[0]
         sun.random_redistribution = p[2]
         sun.extraction = p[1]
         sun.conservative = True
 
-        iterations = 1000000
+        iterations = 10000000
 
         t = time.time()
         for i in tqdm(range(iterations)):

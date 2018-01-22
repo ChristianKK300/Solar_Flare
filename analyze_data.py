@@ -60,11 +60,13 @@ def calculate_alpha(data, plot=False):
 
 
 def plot_distributions_loglog():
-    scale_param = 10
+    scale_param = 1
     time_duration_distr = np.bincount(flare_durations.astype(int))
     flare_peak_en_disrt = np.bincount((flare_peak_en * scale_param).astype(int))
     flare_total_en_disrt = np.bincount((flare_tot_en * scale_param).astype(int))
 
+    # plt.plot(flare_peak_en_disrt)
+    # plt.show()
 
     x_t = range(time_duration_distr.size)
     x_t = np.delete(x_t, np.nonzero(time_duration_distr <= 0)[0])
@@ -75,22 +77,23 @@ def plot_distributions_loglog():
     x_pe = range(flare_peak_en_disrt.size)
     x_pe = np.delete(x_pe, np.nonzero(flare_peak_en_disrt <= 0)[0])
     flare_peak_en_disrt = flare_peak_en_disrt[flare_peak_en_disrt > 0]
-    x_pe = np.log(x_pe)
-    y_pe = np.log(flare_peak_en_disrt)
+    x_pe = np.log(x_pe)[1:]
+    y_pe = np.log(flare_peak_en_disrt)[1:]
 
 
     x_te = range(flare_total_en_disrt.size)
     x_te = np.delete(x_te, np.nonzero(flare_total_en_disrt <= 0)[0])
     flare_total_en_disrt = flare_total_en_disrt[flare_total_en_disrt > 0]
-    x_te = np.log(x_te)
-    y_te = np.log(flare_total_en_disrt)
+    x_te = np.log(x_te)[1:]
+    y_te = np.log(flare_total_en_disrt)[1:]
 
+    print(x_pe, y_pe)
 
-    alpha_t, inter_t, _,_,_ = stats.linregress(x_t, y_t)
-    alpha_pe, inter_pe, _,_,_  = stats.linregress(x_pe, y_pe)
-    alpha_te, inter_te, _,_,_  = stats.linregress(x_te, y_te)
+    alpha_t, inter_t, _,_,_ = stats.linregress(x_t[x_t < 4], y_t[x_t < 4])
+    alpha_pe, inter_pe, _,_,_  = stats.linregress(x_pe[x_pe < 3.5], y_pe[x_pe < 3.5])
+    alpha_te, inter_te, _,_,_  = stats.linregress(x_te[x_te < 4], y_te[x_te < 4])
 
-    print alpha_t, alpha_pe, alpha_te
+    print(alpha_t, alpha_pe, alpha_te)
 
 
 
@@ -99,15 +102,26 @@ def plot_distributions_loglog():
     plt.scatter(x_t, y_t, label='Data')
     plt.plot(x_t, f(x_t, alpha_t, inter_t), 'r-', label='Fit line')
     plt.title("Flare durations.alpha=" + str(alpha_t)[:6])
+    plt.xlabel('Log frequency')
+    plt.ylabel('Log flare duration')
+    plt.legend(loc='upper right')
+    plt.ylim([-1, 7])
     plt.subplot(132)
     plt.scatter(x_pe, y_pe, label='Data')
     plt.plot(x_pe, f(x_pe, alpha_pe, inter_pe), 'r-', label='Fit line')
+    plt.xlabel('Log frequency')
+    plt.ylabel('Log Peak energy')
     plt.title("Peak Energy.alpha=" + str(alpha_pe)[:6])
+    plt.legend(loc='upper right')
+    plt.ylim([-1, 7])
     plt.subplot(133)
     plt.scatter(x_te, y_te, label='Data')
     plt.plot(x_te, f(x_te, alpha_te, inter_te), 'r-', label='Fit line')
     plt.title("Total Energy.alpha=" + str(alpha_te)[:6])
-
+    plt.xlabel('Log frequency')
+    plt.ylabel('Log Total energy')
+    plt.ylim([-1, 7])
+    plt.legend(loc='upper right')
     plt.show()
 
 

@@ -1,7 +1,8 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from lu_ham import LuHamilton
-from strugarek import Strugarek
+# from strugarek import Strugarek
+from strugarek_nonlocal import Strugarek
 from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 
@@ -35,7 +36,7 @@ class MyView(pg.GraphicsWindow):
     def update(self):
         self.counter += 1
         automate.evolve()
-        if not self.counter % 1000:  # update every 100 iterations. Should work faster
+        if not self.counter % 100:  # update every 100 iterations. Should work faster
             self.img.setImage(automate.cells/np.max(automate.cells) * 255)
 
             output_text = 'Iteration: ' + str(self.counter)
