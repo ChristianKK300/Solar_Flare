@@ -215,6 +215,6 @@ if __name__ == '__main__':
         # np.save('data/cells_at_soc', sun.cells)
 
         print("Simulation time: " + str(time.time() - t))
-        filename = 'strugarek_nonlocal_con_'+str(p[0])+str(p[1])+str(p[1])
+        filename = 'strugarek_nonlocal_con_'+str(p[0])+str(p[1])+str(p[1])+'_iter_' + str(iterations)
         sun.save_data(filename)
 
