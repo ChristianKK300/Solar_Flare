@@ -32,6 +32,7 @@ class Strugarek(object):
 
         self.kernel = np.array([[0, -0.25, 0], [-0.25, 1, -0.25], [0, -0.25, 0]])
         self.iteration = 0
+        self.r = self.get_neighbors()
 
     def set_initial_cell_values(self):
         start = 1
@@ -91,9 +92,8 @@ class Strugarek(object):
 
     def get_neighbors(self):
         r = 1 / (np.arange(1, 23, dtype=float) ** 2)
-        r *= 1/np.sum(r)
-        # print r, np.sum(r)
-        return np.random.choice(np.arange(1, 23, dtype=int), size=4, p=r)
+        r *= 1/np.sum(r)  # normalization
+        return r
 
 
 
@@ -101,23 +101,25 @@ class Strugarek(object):
             x, y = cell_xy
             Z = peak_sign * self.Zc
             c = 0.2
-            xl, xr, yl, yr = self.get_neighbors()
+            # for each cell to redistribute I need two numbers (x,y)
+            x1, x2, x3, x4, y1, y2, y3, y4 = np.random.choice(np.arange(1, 23, dtype=int), size=8, p=self.r)
+
             self.cells[x, y] -= Z * (1 - c)
-            # try in case if x + xr out of lattice
+            # try in case if neighbor out of a lattice
             try:
-                self.cells[x + xr, y] += Z * c
+                self.cells[x + x1, y + y1 - 1] += Z * c    # first quadrant
             except:
                 pass
             try:
-                self.cells[x - xl, y] += Z * c
+                self.cells[x - x3, y - y3 + 1] += Z * c    # third quadrant
             except:
                 pass
             try:
-                self.cells[x, y + yr] += Z * c
+                self.cells[x - x2 + 1, y + y2] += Z * c    # second quadrant
             except:
                 pass
             try:
-                self.cells[x, y - yl] += Z * c
+                self.cells[x + x4 - 1, y - y4] += Z * c    # forth quadrant
             except:
                 pass
 
@@ -207,14 +209,18 @@ if __name__ == '__main__':
 
         iterations = 10000000
 
-        t = time.time()
-        for i in tqdm(range(iterations)):
+        # t = time.time()
+        # for i in tqdm(range(iterations)):
+        for i in range(iterations):
             sun.evolve()
+            if not i % 1000:
+                print float(i)/iterations,
+                print '%'
             # print sun.get_neighbors()
 
         # np.save('data/cells_at_soc', sun.cells)
 
-        print("Simulation time: " + str(time.time() - t))
+        # print("Simulation time: " + str(time.time() - t))
         filename = 'strugarek_nonlocal_con_'+str(p[0])+str(p[1])+str(p[1])+'_iter_' + str(iterations)
         sun.save_data(filename)
 
