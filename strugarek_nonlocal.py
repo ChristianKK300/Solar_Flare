@@ -69,7 +69,7 @@ class Strugarek(object):
                 r0 = np.random.uniform(self.Dnc, 1)
             # print np.abs(self.dA[x, y]) - self.Zc
             if extraction:
-                print np.abs(self.dA[x, y])
+                print(np.abs(self.dA[x, y]))
                 Z = peak_sign * np.random.uniform(np.abs(self.dA[x, y]) - self.Zc, self.Zc)
 
             c = r0 * 0.2
@@ -89,17 +89,37 @@ class Strugarek(object):
                 self.cells[x, y + 1] += Z * c
                 self.cells[x, y - 1] += Z * c
 
+    def get_neighbors(self):
+        r = 1 / (np.arange(1, 23, dtype=float) ** 2)
+        r *= 1/np.sum(r)
+        # print r, np.sum(r)
+        return np.random.choice(np.arange(1, 23, dtype=int), size=4, p=r)
+
+
+
     def redistribute_nonlocal(self, cell_xy, peak_sign):
             x, y = cell_xy
             Z = peak_sign * self.Zc
             c = 0.2
-
+            xl, xr, yl, yr = self.get_neighbors()
             self.cells[x, y] -= Z * (1 - c)
-            self.cells[x + 1, y] += Z * c
-            self.cells[x - 1, y] += Z * c
-            self.cells[x, y + 1] += Z * c
-            self.cells[x, y - 1] += Z * c
-
+            # try in case if x + xr out of lattice
+            try:
+                self.cells[x + xr, y] += Z * c
+            except:
+                pass
+            try:
+                self.cells[x - xl, y] += Z * c
+            except:
+                pass
+            try:
+                self.cells[x, y + yr] += Z * c
+            except:
+                pass
+            try:
+                self.cells[x, y - yl] += Z * c
+            except:
+                pass
 
 
     def evolve(self):
@@ -108,10 +128,11 @@ class Strugarek(object):
             peaks_sign = np.sign(self.dA * peaks)
             cells_to_redistribute = np.vstack(np.nonzero(peaks)).T
             for cell in cells_to_redistribute:
-                self.redistribute_strugarek(cell, peaks_sign[cell[0], cell[1]],
-                                            random_redistribution=self.random_redistribution,
-                                            extraction=self.extraction,
-                                            conservative=self.conservative)
+                # self.redistribute_strugarek(cell, peaks_sign[cell[0], cell[1]],
+                #                             random_redistribution=self.random_redistribution,
+                #                             extraction=self.extraction,
+                #                             conservative=self.conservative)
+                self.redistribute_nonlocal(cell, peaks_sign[cell[0], cell[1]])
 
             self.de = 0.8 * self.Zc ** 2 * (2 * np.abs(self.dA) / self.Zc - 1) * peaks
             # self.de = 0.8 * self.Zc * (np.abs(self.dA)) * peaks
@@ -177,22 +198,23 @@ if __name__ == '__main__':
               ]
 
     sun = Strugarek((48, 48))
-    for p in [params[2]]:
-        print p
+    for p in [params[-1]]:
+        print(p)
         sun.random_threshold = p[0]
         sun.random_redistribution = p[2]
         sun.extraction = p[1]
         sun.conservative = True
 
-        iterations = 500000
+        iterations = 10000000
 
         t = time.time()
         for i in tqdm(range(iterations)):
             sun.evolve()
+            # print sun.get_neighbors()
 
         # np.save('data/cells_at_soc', sun.cells)
 
         print("Simulation time: " + str(time.time() - t))
-        filename = 'strugarek_con_'+str(p[0])+str(p[1])+str(p[1])
+        filename = 'strugarek_nonlocal_con_'+str(p[0])+str(p[1])+str(p[1])+'_iter_' + str(iterations)
         sun.save_data(filename)
 
