@@ -102,13 +102,13 @@ class Strugarek(object):
             Z = peak_sign * self.Zc
             c = 0.2
             # for each cell to redistribute I need two numbers (x,y)
-            r = np.random.choice(np.arange(1, 23, dtype=int), size=4, p=self.r)
-            phi1, phi2, phi3, phi4 = np.random.choice(np.arange(360, dtype=int), size=4)
+            number_of_neighbors = 4
+            r = np.random.choice(np.arange(1, 23, dtype=int), size=number_of_neighbors, p=self.r)
+            phi = np.random.choice(np.arange(360, dtype=int), size=number_of_neighbors)
 
             self.cells[x, y] -= Z * (1 - c)
-            number_of_neighbors = 4
             for i in range(number_of_neighbors):
-                x1, y1 = int(np.rint(r[i] * np.cos(np.deg2rad(phi1)))), int(np.rint(r[i] * np.sin(np.deg2rad(phi1))))
+                x1, y1 = int(np.rint(r[i] * np.cos(np.deg2rad(phi[i])))), int(np.rint(r[i] * np.sin(np.deg2rad(phi[i]))))
                 # try in case if neighbor out of a lattice
                 try:
                     self.cells[x + x1, y + y1] += Z * c
