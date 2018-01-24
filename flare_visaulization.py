@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from lu_ham import LuHamilton
+# from lu_ham import LuHamilton
 # from strugarek import Strugarek
 from strugarek_nonlocal import Strugarek
 from pyqtgraph.Qt import QtGui, QtCore
@@ -9,6 +9,7 @@ import pyqtgraph as pg
 # automate = LuHamilton((20, 20))
 automate = Strugarek((48, 48))
 
+pg.setConfigOption('background', 'w')
 class MyView(pg.GraphicsWindow):
     def __init__(self):
         super(MyView, self).__init__()

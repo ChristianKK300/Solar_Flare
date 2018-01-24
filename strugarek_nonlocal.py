@@ -102,27 +102,18 @@ class Strugarek(object):
             Z = peak_sign * self.Zc
             c = 0.2
             # for each cell to redistribute I need two numbers (x,y)
-            x1, x2, x3, x4, y1, y2, y3, y4 = np.random.choice(np.arange(1, 23, dtype=int), size=8, p=self.r)
+            number_of_neighbors = 4
+            r = np.random.choice(np.arange(1, 23, dtype=int), size=number_of_neighbors, p=self.r)
+            phi = np.random.choice(np.arange(360, dtype=int), size=number_of_neighbors)
 
             self.cells[x, y] -= Z * (1 - c)
-            # try in case if neighbor out of a lattice
-            try:
-                self.cells[x + x1, y + y1 - 1] += Z * c    # first quadrant
-            except:
-                pass
-            try:
-                self.cells[x - x3, y - y3 + 1] += Z * c    # third quadrant
-            except:
-                pass
-            try:
-                self.cells[x - x2 + 1, y + y2] += Z * c    # second quadrant
-            except:
-                pass
-            try:
-                self.cells[x + x4 - 1, y - y4] += Z * c    # forth quadrant
-            except:
-                pass
-
+            for i in range(number_of_neighbors):
+                x1, y1 = int(np.rint(r[i] * np.cos(np.deg2rad(phi[i])))), int(np.rint(r[i] * np.sin(np.deg2rad(phi[i]))))
+                # try in case if neighbor out of a lattice
+                try:
+                    self.cells[x + x1, y + y1] += Z * c
+                except:
+                    pass
 
     def evolve(self):
         peaks = self.find_peaks(self.cells, stochastic_threshold=self.random_threshold)
@@ -174,8 +165,8 @@ class Strugarek(object):
 
 
 if __name__ == '__main__':
-    import time
-    from tqdm import tqdm
+    # import time
+    # from tqdm import tqdm
     #params
     # size of a lattice
     # threshold to lunch avalanche
@@ -207,20 +198,20 @@ if __name__ == '__main__':
         sun.extraction = p[1]
         sun.conservative = True
 
-        iterations = 10000000
+        iterations = 10**7
 
         # t = time.time()
         # for i in tqdm(range(iterations)):
         for i in range(iterations):
             sun.evolve()
             if not i % 1000:
-                print float(i)/iterations,
-                print '%'
+                print(float(i)/iterations * 100),
+                print('%')
             # print sun.get_neighbors()
 
         # np.save('data/cells_at_soc', sun.cells)
 
         # print("Simulation time: " + str(time.time() - t))
-        filename = 'strugarek_nonlocal_con_'+str(p[0])+str(p[1])+str(p[1])+'_iter_' + str(iterations)
+        filename = 'strugarek_nonlocal_con1_'+str(p[0])+str(p[1])+str(p[1])+'_iter_' + str(iterations)
         sun.save_data(filename)
 

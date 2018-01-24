@@ -2,8 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-filename = 'data/strugarek_nonlocal_con_000.npz'
-# filename = 'data/strugarek_con_000.npz'
+# filename = 'data/strugarek_nonlocal_con_000.npz'
+filename = 'data/strugarek_nonlocal_con_000_iter_10000000.npz'
+# filename = 'data/strugarek_con_000_iter_1000000.npz'
+
 # filename = 'data/strugarek_con_100.npz'
 data = np.load(filename)
 
@@ -15,10 +17,12 @@ data = np.load(filename)
 
 
 # print np.load('data/cells_at_soc.npy')
+data_size = data['t'].size
+start_point = int(data_size*0.1)  # delete first 10 percent of data
 
-flare_durations = data['t'][20:]
-flare_peak_en = data['pe'][20:]
-flare_tot_en = data['te'][20:]
+flare_durations = data['t'][start_point:]
+flare_peak_en = data['pe'][start_point:]
+flare_tot_en = data['te'][start_point:]
 
 
 
