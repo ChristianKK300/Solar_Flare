@@ -166,14 +166,14 @@ if __name__ == '__main__':
               ]
 
     sun = Strugarek((48, 48))
-    for p in params:
+    for p in [params[-1]]:
         print p
         sun.random_threshold = p[0]
         sun.random_redistribution = p[2]
         sun.extraction = p[1]
         sun.conservative = True
 
-        iterations = 3000000
+        iterations = 1000000
 
         t = time.time()
         for i in tqdm(range(iterations)):
@@ -182,6 +182,6 @@ if __name__ == '__main__':
         # np.save('data/cells_at_soc', sun.cells)
 
         print("Simulation time: " + str(time.time() - t))
-        filename = 'strugarek_con_'+str(p[0])+str(p[1])+str(p[1])
+        filename = 'strugarek_con_'+str(p[0])+str(p[1])+str(p[1])+'_iter_' + str(iterations)
         sun.save_data(filename)
 
