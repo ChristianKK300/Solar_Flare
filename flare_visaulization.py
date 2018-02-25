@@ -7,7 +7,9 @@ from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 
 # automate = LuHamilton((20, 20))
-automate = Strugarek((48, 48))
+
+shape = (30,30)
+automate = Strugarek(shape)
 
 pg.setConfigOption('background', 'w')
 class MyView(pg.GraphicsWindow):
@@ -25,6 +27,14 @@ class MyView(pg.GraphicsWindow):
         text = 'state of the network'
         self.label = l.addLabel(text, colspan=2)
 
+        l.nextRow()
+        l2 = l.addLayout(colspan=3)
+        l2.setContentsMargins(10, 10, 10, 10)
+        l2.addLabel('Amplitude, cross section', angle=-90)
+        self.plot = l2.addPlot(colspan=2)
+        self.curve = self.plot.plot()
+        # self.plot.setYRange(0, 1)
+
         # self.sp_state = np.zeros(poppy.sp.getColumnDimensions(), dtype="uint32")
         # self.prev_sp_state = np.zeros(poppy.brain.L23_shape, dtype="uint32")
         # self.average_difference = 0.4
@@ -39,9 +49,10 @@ class MyView(pg.GraphicsWindow):
         automate.evolve()
         if not self.counter % 100:  # update every 100 iterations. Should work faster
             self.img.setImage(automate.cells/np.max(automate.cells) * 255)
-
+            print np.max(automate.cells)
             output_text = 'Iteration: ' + str(self.counter)
             self.label.setText(output_text)
+            self.curve.setData(automate.cells[int(shape[0]/2), :])
 
 
 
